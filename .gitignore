@@ -1,0 +1,14 @@
+# Exclude this annoying macOS file
+.DS_Store
+
+# Exclude zones directories
+/venv/**
+/build/**
+/dist/**
+/src/udns_auth.egg-info/**
+
+# Exclude some file types
+*.csv
+*.json
+*.conf
+*.html
