@@ -1,4 +1,4 @@
-# USAGE.md
+# examples
 
 ## Table of Contents
 - [Create Domain (`create_domain.py`)](#create_domain\.py)
