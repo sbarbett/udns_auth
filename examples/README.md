@@ -1,9 +1,9 @@
 # examples
 
 ## Table of Contents
-- [Create Domain (`create_domain.py`)](#create_domain\.py)
-- [Delete Domains (`delete_domains.py`)](#delete_domains\.py)
-- [Update RRSET (`update_rrset_put.py`)](#update_rrset_put\.py)
+- [Create Domain (`create_domain.py`)](#create_domainpy)
+- [Delete Domains (`delete_domains.py`)](#delete_domainspy)
+- [Update RRSET (`update_rrset_put.py`)](#update_rrset_putpy)
 
 ---
 
