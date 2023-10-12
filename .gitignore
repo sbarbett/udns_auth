@@ -6,6 +6,7 @@
 /build/**
 /dist/**
 /src/udns_auth.egg-info/**
+.idea/**
 
 # Exclude some file types
 *.csv

@@ -173,8 +173,8 @@ class UltraApi:
         - Union[dict, str, bytes]: The response body.
         """
         # Debugging
-        print(type(payload))
-        print(payload)
+        #print(type(payload))
+        #print(payload)
         if plain_text:
             resp = requests.request(method, self.base_url+uri, params=params, data=payload, headers=self._headers(content_type))
         else:
