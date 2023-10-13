@@ -1,6 +1,6 @@
 # ultra_auth
 
-A compact Python client for managing a connection with the UltraDNS API. For the "official," and much more ambitious client, go [here](https://github.com/ultradns/python_rest_api_client).
+A compact Python client for managing a connection with the UltraDNS API. For the "official," and much more ambitious project, go [here](https://github.com/ultradns/python_rest_api_client).
 
 ## Features
 
