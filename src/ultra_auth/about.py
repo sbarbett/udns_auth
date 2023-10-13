@@ -1,4 +1,4 @@
-__version__="0.1.2"
+__version__="0.1.2.0"
 __prefix__="python-ultra-auth"
 __repo__="https://github.com/sbarbett/ultra_auth"
 

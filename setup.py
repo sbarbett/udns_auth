@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="ultra_auth",
-    version="0.1.2",
+    version="0.1.2.0",
     author="Shane Barbetta",
     author_email="shane@barbetta.me",
     description="A compact auth client for UltraDNS",
