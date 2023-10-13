@@ -64,9 +64,45 @@ For example:
 2. The zone export endpoint, when requesting one zone, returns a plain text response
 3. Most endpoints return JSON
 
+## Debugging
+
+### Debug Mode
+
+When debug mode is enabled the client will print some verbose information about the request to stdout.
+
+```python
+client = UltraApi(your_username, your_password, debug=True)
+# Toggle it on and off
+client.toggle_debug()
+```
+
+### Pretty Print Mode
+
+When pretty print mode is enabled the client will print the JSON response in a more human-readable format. This returns
+a string instead of a dictionary, so be aware of that.
+
+```python
+client = UltraApi(your_username, your_password, pprint=True)
+# Toggle it on and off
+client.toggle_pprint()
+```
+
+### User-Agent
+
+The client will send a unique User-Agent header with each request. By default, the User-Agent header will be "python-ultra-auth/vX.X.X (+repository_url)" where X.X.X is the version of the client. 
+
+You can override this by passing a custom User-Agent header to the client.
+
+```python
+client = UltraApi(your_username, your_password, user_agent="my-custom-user-agent")
+# This can be modified using the set_user_agent method. You return to the default, simply set it to None.
+client.set_user_agent(None)
+client.set_user_agent("my-new-custom-user-agent")
+```
+
 ## Note
 
-Using a bearer token without a refresh token means the client state will expire in approximately 1 hour (assuming the token was just generated). Be warned.
+Using a bearer token without a refresh token means the client state will expire in approximately 1 hour (assuming the token was just generated). The client won't stop you from doing this, but be warned.
 
 ## Contribute
 

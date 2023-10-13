@@ -1,15 +1,19 @@
 import requests
+import json
 from typing import Union
+from .about import get_client_user_agent
 
 class UltraApi:
-    def __init__(self, bu: str, pr: str = None, use_token: bool = False):
-        """
-        Initialize the UltraApi client.
+    def __init__(self, bu: str, pr: str = None, use_token: bool = False, debug: bool = False, pprint: bool = False, user_agent: str = None):
+        """Initialize the client.
 
         Parameters:
         - bu (str): Either username or bearer token based on `use_token` flag.
         - pr (str, optional): Either password or refresh token based on `use_token` flag. Defaults to None.
         - use_token (bool, optional): If True, treats `bu` as bearer token and `pr` as refresh token. Defaults to False.
+        - debug (bool, optional): If True, prints debug information. Defaults to False.
+        - pprint (bool, optional): If True, prints JSON responses in a more human-readable format. Defaults to False.
+        - user_agent (str, optional): The user agent to use. Defaults to None.
 
         Raises:
         - ValueError: If `pr` is not provided when `use_token` is True.
@@ -17,6 +21,9 @@ class UltraApi:
         self.base_url = "https://api.ultradns.com"
         self.access_token = str()
         self.refresh_token = str()
+        self.debug = debug
+        self.pprint = pprint
+        self.user_agent = user_agent
 
         if use_token:
             self.access_token = bu
@@ -25,13 +32,11 @@ class UltraApi:
                 print(
                     "Warning: Passing a Bearer token with no refresh token means the client state will expire after an hour.")
         else:
-            self.username = bu
-            self.password = pr
-            if not self.password:
+            if not pr:
                 raise ValueError("Password is required when providing a username.")
-            self._auth()
+            self._auth(bu, pr)
 
-    def _auth(self):
+    def _auth(self, username, password):
         """Authenticate using username and password.
 
         Returns:
@@ -42,8 +47,8 @@ class UltraApi:
         """
         payload = {
             "grant_type": "password",
-            "username": self.username,
-            "password": self.password
+            "username": username,
+            "password": password
         }
         resp = requests.post(f"{self.base_url}/authorization/token", data=payload)
         resp.raise_for_status()
@@ -82,12 +87,49 @@ class UltraApi:
         """
         headers = {
             "Accept": "application/json",
-            "Authorization": f"Bearer {self.access_token}",
-            "User-Agent": "Shane's UDNS Client"
+            "Authorization": f"Bearer {self.access_token}"
         }
+
+        if self.user_agent:
+            headers["User-Agent"] = self.user_agent
+        else:
+            headers["User-Agent"] = get_client_user_agent()
+
         if content_type:
             headers["Content-Type"] = content_type
         return headers
+
+    def toggle_debug(self):
+        """Toggle debug mode. When this is enabled, the client will print verbose request information."""
+        if self.debug:
+            self.debug = False
+            print("Debug mode disabled.")
+        else:
+            self.debug = True
+            print("Debug mode enabled.")
+
+    def toggle_pprint(self):
+        """Toggle pretty print mode. When this is enabled, the client will print JSON responses in a more human-readable
+        format.
+
+        This will return a string instead of a dict, so if you want to use the JSON it will need to be loaded back into
+        a dict. This is useful for debugging, but should not be used in production.
+        """
+        if self.pprint:
+            self.pprint = False
+            print("Pretty print mode disabled.")
+        else:
+            self.pprint = True
+            print("Pretty print mode enabled.")
+
+    def set_user_agent(self, user_agent: str):
+        """Set the user agent to use.
+
+        Parameters:
+        - user_agent (str): The user agent to use.
+        """
+        print(f"User agent set to '{user_agent}'")
+        self.user_agent = user_agent
 
     def post(self, uri: str, payload: str = None, plain_text: bool = False) -> Union[dict, str, bytes]:
         """Make a POST request.
@@ -173,8 +215,26 @@ class UltraApi:
         - Union[dict, str, bytes]: The response body.
         """
         # Debugging
-        #print(type(payload))
-        #print(payload)
+        if self.debug:
+            debug_info ={
+                "headers": self._headers(content_type),
+                "method": method,
+                "url": self.base_url+uri,
+                "params": params,
+                "payload": payload,
+                "payload_type": type(payload).__name__,
+                "retry": retry,
+                "access_token": self.access_token,
+                "refresh_token": self.refresh_token
+            }
+            print(f"Debug info: {json.dumps(debug_info, indent=4)}")
+
+        # While uncommon, when dealing with records that have / characters in the name, you need to use a unicode string
+        # representation of that character. This is a hacky way to do that. First, dump the json payload to a string,
+        # then use the replace method to replace instances of "/" with "\u002F". If you load it back into a dict, it
+        # reinterprets the unicode as the literal character. Instead, you need to use the "data" parameter of the
+        # requests module and send it as a string. There may be other cases where this is necessary, but I haven't
+        # encountered them yet. By default, this is disabled and the payload is sent as a dict.
         if plain_text:
             resp = requests.request(method, self.base_url+uri, params=params, data=payload, headers=self._headers(content_type))
         else:
@@ -182,7 +242,10 @@ class UltraApi:
 
         if resp.status_code == requests.codes.NO_CONTENT:
             # DELETE requests and a few other things return no response body
-            return {}
+            if self.pprint:
+                return json.dumps({"status_code": resp.status_code, "message": "No content"}, indent=4)
+            else:
+                return {'status_code': resp.status_code, 'message': 'No content'}
 
         if resp.headers['Content-Type'] == 'application/zip':
             # Return the bytes. Zone exports return zip files
@@ -207,8 +270,12 @@ class UltraApi:
         try:
             resp.raise_for_status()
         except Exception as e:
-            print(resp.text)
+            if resp.text:
+                print(f"Message: {resp.text}")
             raise
 
         # Everything else should be JSON (hopefully)
-        return resp.json()
+        if self.pprint:
+            return json.dumps(resp.json(), indent=4)
+        else:
+            return resp.json()
