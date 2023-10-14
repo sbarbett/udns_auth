@@ -1,20 +1,20 @@
 # examples
 
 ## Table of Contents
-- [Create Domain (`create_domain.py`)](#create_domain.py)
-- [Delete Domains (`delete_domains.py`)](#delete_domains.py)
+- [Create Zone (`create_zone.py`)](#create_domain.py)
+- [Delete Zone (`delete_zone.py`)](#delete_domains.py)
 - [Update RRSET (`update_rrset_put.py`)](#update_rrset_put.py)
 
 ---
 
-### create_domain.py
+### create_zone.py
 
 This script creates a domain with associated A and CNAME records. 
 
 **Usage**:
 
 ```
-python create_domain.py [DOMAIN] -u [USERNAME] -p [PASSWORD]
+python create_zone.py [DOMAIN] -u [USERNAME] -p [PASSWORD]
 ```
 
 **Arguments**:
@@ -25,19 +25,19 @@ python create_domain.py [DOMAIN] -u [USERNAME] -p [PASSWORD]
 **Example**:
 
 ```
-python create_domain.py example.com -u myUsername -p myPassword
+python create_zone.py example.com -u myUsername -p myPassword
 ```
 
 ---
 
-### delete_domains.py
+### delete_zone.py
 
 This script deletes a specified domain.
 
 **Usage**:
 
 ```
-python delete_domains.py [DOMAIN] -u [USERNAME] -p [PASSWORD]
+python delete_zone.py [DOMAIN] -u [USERNAME] -p [PASSWORD]
 ```
 
 **Arguments**:
@@ -48,7 +48,7 @@ python delete_domains.py [DOMAIN] -u [USERNAME] -p [PASSWORD]
 **Example**:
 
 ```
-python delete_domains.py example.com -u myUsername -p myPassword
+python delete_zone.py example.com -u myUsername -p myPassword
 ```
 
 ---
