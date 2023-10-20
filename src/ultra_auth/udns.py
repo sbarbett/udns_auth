@@ -36,7 +36,7 @@ class UltraApi:
                 raise ValueError("Password is required when providing a username.")
             self._auth(bu, pr)
 
-    def _auth(self, username, password):
+    def _auth(self, username: str, password: str):
         """Authenticate using username and password.
 
         Returns:
@@ -264,13 +264,13 @@ class UltraApi:
         if resp.status_code == 401 and retry:
             # Refresh the token if it expired, then try again
             self._refresh()
-            return self._call(uri, method, params, payload, False)
+            return self._call(uri, method, params=params, payload=payload, retry=False, content_type=content_type, plain_text=plain_text)
 
         # Raise any error statuses. Since the UDNS API also produces a response body in most cases, print that too
         try:
             resp.raise_for_status()
         except Exception as e:
-            if resp.text:
+            if resp.text and self.debug:
                 print(f"Message: {resp.text}")
             raise
 
