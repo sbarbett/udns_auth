@@ -100,6 +100,53 @@ client.set_user_agent(None)
 client.set_user_agent("my-new-custom-user-agent")
 ```
 
+## Managing Tasks
+
+Some endpoints return tasks, indicating that the operation might take some time to complete. For these scenarios, there's a `TaskHandler` helper class.
+
+### Initialization
+
+Create an instance of `UltraApi`.
+
+```python
+import ultra_auth
+client = ultra_auth.UltraApi(your_username, your_password)
+```
+
+Pass this to the `TaskHandler`.
+
+```python
+task = ultra_auth.TaskHandler(client)
+```
+
+### Getting the Task ID
+
+When an endpoint returns a task, the response will contain a `task_id`. 
+
+```python
+response = client.post('/v3/zones/export', {'zoneNames':['your_domain_name.com']})
+task_id = response['task_id']
+```
+
+### Checking Task Status
+
+You can check the current status of a task using `check` or implicitly wait for it to be completed using `wait`.
+
+```python
+print(task.check(task_id))
+print(task.wait(task_id, 5))
+```
+
+The second `wait` arg is the number of seconds to pause between polling. The default is 10.
+
+### Task Results
+
+Once a task is completed, you can retrieve the result using the `result` method:
+
+```python
+print(task.result(task_id))
+```
+
 ## Note
 
 Using a bearer token without a refresh token means the client state will expire in approximately 1 hour (assuming the token was just generated). The client won't stop you from doing this, but be warned.
