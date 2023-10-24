@@ -261,7 +261,9 @@ class UltraApi:
 
         if resp.status_code == requests.codes.ACCEPTED:
             # If there's a task ID in the header, add it to the JSON so the result can be retrieved
-            response_data = resp.json()
+            response_data = {}
+            if resp.content:  # Check if the response content is not empty
+                response_data = resp.json()
             response_data.update({"task_id": resp.headers['X-Task-Id']})
             return response_data
 
@@ -279,7 +281,10 @@ class UltraApi:
             raise
 
         # Everything else should be JSON (hopefully)
-        if self.pprint:
-            return json.dumps(resp.json(), indent=4)
+        if resp.content:  # Check if the response content is not empty
+            if self.pprint:
+                return json.dumps(resp.json(), indent=4)
+            else:
+                return resp.json()
         else:
-            return resp.json()
+            return None  # or an appropriate default value or message
