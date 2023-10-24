@@ -247,6 +247,10 @@ class UltraApi:
             else:
                 return {'status_code': resp.status_code, 'message': 'No content'}
 
+        # I discovered that certain endpoints return no content type, so I'm adding this to prevent errors
+        if 'Content-Type' not in resp.headers:
+            resp.headers['Content-Type'] = 'None'
+
         if resp.headers['Content-Type'] == 'application/zip':
             # Return the bytes. Zone exports return zip files
             return resp.content
