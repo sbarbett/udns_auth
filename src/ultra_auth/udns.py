@@ -264,7 +264,10 @@ class UltraApi:
             response_data = {}
             if resp.content:  # Check if the response content is not empty
                 response_data = resp.json()
-            response_data.update({"task_id": resp.headers['X-Task-Id']})
+            if 'X-Task-Id' in resp.headers:  # Check if the header is present
+                response_data.update({"task_id": resp.headers['X-Task-Id']})
+            if 'Location' in resp.headers:
+                response_data.update({"location": resp.headers['Location']})
             return response_data
 
         if resp.status_code == 401 and retry:
